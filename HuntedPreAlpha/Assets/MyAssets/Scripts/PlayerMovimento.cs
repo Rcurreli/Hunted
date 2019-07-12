@@ -10,6 +10,7 @@ public class PlayerMovimento : MonoBehaviour
     private Rigidbody rb;
     private bool controllo;
     private bool move;
+    private bool riposiziona = false;
     private Vector3 moveDir;
     private Vector3 raysDirBlu;
     private int raysAsse; 
@@ -36,7 +37,8 @@ public class PlayerMovimento : MonoBehaviour
     void Update()
     {    
         if (Input.GetKeyDown(KeyCode.UpArrow)) {
-            if(Omino.transform.rotation == Quaternion.LookRotation(transform.forward) || Omino.transform.rotation == Quaternion.LookRotation(- transform.forward)){
+            if(Omino.transform.rotation == Quaternion.LookRotation(transform.forward) 
+            || Omino.transform.rotation == Quaternion.LookRotation(- transform.forward)){
                 moveDir = transform.forward;
                 move = true;
             }
@@ -47,7 +49,8 @@ public class PlayerMovimento : MonoBehaviour
             }
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow)) {
-            if(Omino.transform.rotation == Quaternion.LookRotation(- transform.forward) || Omino.transform.rotation == Quaternion.LookRotation(transform.forward)){
+            if(Omino.transform.rotation == Quaternion.LookRotation(- transform.forward) 
+            || Omino.transform.rotation == Quaternion.LookRotation(transform.forward)){
                 moveDir = - transform.forward;
                 move = true;
             }    
@@ -59,7 +62,8 @@ public class PlayerMovimento : MonoBehaviour
         }
 
         else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-            if(Omino.transform.rotation == Quaternion.LookRotation(- transform.right) || Omino.transform.rotation == Quaternion.LookRotation(transform.right)){
+            if(Omino.transform.rotation == Quaternion.LookRotation(- transform.right) 
+            || Omino.transform.rotation == Quaternion.LookRotation(transform.right)){
                 moveDir = - transform.right;
                 move = true;
             }  
@@ -71,7 +75,8 @@ public class PlayerMovimento : MonoBehaviour
         }
 
         else if (Input.GetKeyDown(KeyCode.RightArrow)) {
-            if(Omino.transform.rotation == Quaternion.LookRotation(transform.right) || Omino.transform.rotation == Quaternion.LookRotation(- transform.right)){
+            if(Omino.transform.rotation == Quaternion.LookRotation(transform.right) 
+            || Omino.transform.rotation == Quaternion.LookRotation(- transform.right)){
                 moveDir = transform.right;
                 move = true;
             }
@@ -95,6 +100,7 @@ public class PlayerMovimento : MonoBehaviour
         if(controllo){
             if(RaysTurn()){
                 moveDir = raysDirBlu;
+                riposiziona = true;
                 move = true;
                 controllo = false;
             }
@@ -108,32 +114,14 @@ public class PlayerMovimento : MonoBehaviour
         if(RaysForward()){
             move = false;
             rb.velocity = new Vector3(0,0,0);
-            if(Omino.transform.rotation == Quaternion.LookRotation(transform.forward)){
-                int divisione = (int)(transform.position.z / 0.5f);
-                if((transform.position.z - (divisione * 0.5f))> 0.3f) divisione +=1;
-                else if((transform.position.z - (divisione * 0.5f))< -0.3f) divisione -=1;
-                transform.position = new Vector3(transform.position.x,transform.position.y,divisione * 0.5f);
+            if(Omino.transform.rotation == Quaternion.LookRotation(transform.forward)
+            || Omino.transform.rotation == Quaternion.LookRotation(- transform.forward)){
+                HitReset(1); 
             }
-            else if(Omino.transform.rotation == Quaternion.LookRotation(- transform.forward)){
-                int divisione = (int)(transform.position.z / 0.5f);
-                if((transform.position.z - (divisione * 0.5f))> 0.3f) divisione +=1;
-                else if((transform.position.z - (divisione * 0.5f))< -0.3f) divisione -=1;
-                transform.position = new Vector3(transform.position.x,transform.position.y,divisione * 0.5f);                
+            else if(Omino.transform.rotation == Quaternion.LookRotation(transform.right)
+            || Omino.transform.rotation == Quaternion.LookRotation(- transform.right)){
+                HitReset(0);
             }
-            
-            else if(Omino.transform.rotation == Quaternion.LookRotation(transform.right)){
-                int divisione = (int)(transform.position.x / 0.5f);
-                if((transform.position.x - (divisione * 0.5f))> 0.3f) divisione +=1;
-                else if((transform.position.x - (divisione * 0.5f))< -0.3f) divisione -=1;
-                transform.position = new Vector3(divisione * 0.5f,transform.position.y,transform.position.z);
-            }
-
-            else if(Omino.transform.rotation == Quaternion.LookRotation(- transform.right)){
-                int divisione = (int)(transform.position.x / 0.5f);
-                if((transform.position.x - (divisione * 0.5f))> 0.3f) divisione +=1;
-                else if((transform.position.x - (divisione * 0.5f))< -0.3f) divisione -=1;
-                transform.position = new Vector3(divisione * 0.5f,transform.position.y,transform.position.z);
-            }    
         }
     }
 
@@ -143,23 +131,34 @@ public class PlayerMovimento : MonoBehaviour
         rayPosBluL = transform.position;
         rayPosBluL.y += 0.5f;
         if(raysAsse == 0){
-            rayPosBluR.x += 0.49f;
-            rayPosBluL.x -= 0.49f;
+            rayPosBluR.x += 0.4f;
+            rayPosBluL.x -= 0.4f;
         }
         else if(raysAsse == 1){
-            rayPosBluR.z += 0.49f;
-            rayPosBluL.z -= 0.49f;
+            rayPosBluR.z += 0.4f;
+            rayPosBluL.z -= 0.4f;
         }
         rayFindBluR = Physics.Raycast(rayPosBluR, raysDirBlu, out rayHitBluR, 0.6f);
         rayFindBluL = Physics.Raycast(rayPosBluL, raysDirBlu, out rayHitBluL, 0.6f);
         
-        Debug.DrawRay(rayPosBluR, raysDirBlu, Color.blue);
+        Debug.DrawRay(rayPosBluR, raysDirBlu, Color.black);
         Debug.DrawRay(rayPosBluL, raysDirBlu, Color.blue);
 
-        if ((!rayFindBluR || rayHitBluR.transform.tag != "Muro")&&(!rayFindBluL || rayHitBluL.transform.tag != "Muro")) {
+        if ((!rayFindBluR || rayHitBluR.transform.tag != "Muro")
+        &&(!rayFindBluL || rayHitBluL.transform.tag != "Muro")) {
             return true;
         } 
         return false;
+    }
+
+    void Movimento(Vector3 dir){
+        Omino.transform.rotation = Quaternion.LookRotation(dir);
+        if(riposiziona){
+            HitReset(0);
+            HitReset(1);
+            riposiziona = false;
+        }
+        rb.velocity = dir * velocita;  
     }
 
     bool RaysForward(){
@@ -167,11 +166,13 @@ public class PlayerMovimento : MonoBehaviour
         rayPosRossoR.y += 0.5f;
         rayPosRossoL = transform.position;
         rayPosRossoL.y += 0.5f;
-        if(Omino.transform.rotation == Quaternion.LookRotation(- transform.forward) || Omino.transform.rotation == Quaternion.LookRotation(transform.forward)){
+        if(Omino.transform.rotation == Quaternion.LookRotation(- transform.forward) 
+        || Omino.transform.rotation == Quaternion.LookRotation(transform.forward)){
             rayPosRossoR.x += 0.47f;
             rayPosRossoL.x -= 0.47f;
         }
-        else if(Omino.transform.rotation == Quaternion.LookRotation(- transform.right) || Omino.transform.rotation == Quaternion.LookRotation(transform.right)){
+        else if(Omino.transform.rotation == Quaternion.LookRotation(- transform.right) 
+        || Omino.transform.rotation == Quaternion.LookRotation(transform.right)){
             rayPosRossoR.z += 0.47f;
             rayPosRossoL.z -= 0.47f;
         }
@@ -194,10 +195,18 @@ public class PlayerMovimento : MonoBehaviour
         return false;           
     }
 
-
-    void Movimento(Vector3 dir){
-        Omino.transform.rotation = Quaternion.LookRotation(dir);
-        rb.velocity = dir * velocita;  
+    void HitReset(int asse){
+        if(asse == 0){
+            int divisione = (int)(transform.position.x / 0.5f);
+            if((transform.position.x - (divisione * 0.5f))> 0.3f) divisione +=1;
+            else if((transform.position.x - (divisione * 0.5f))< -0.3f) divisione -=1;
+            transform.position = new Vector3(divisione * 0.5f,transform.position.y,transform.position.z);
+        }
+        else if(asse == 1){
+            int divisione = (int)(transform.position.z / 0.5f);
+            if((transform.position.z - (divisione * 0.5f))> 0.3f) divisione +=1;
+            else if((transform.position.z - (divisione * 0.5f))< -0.3f) divisione -=1;
+            transform.position = new Vector3(transform.position.x,transform.position.y,divisione * 0.5f);  
+        }
     }
-
 }

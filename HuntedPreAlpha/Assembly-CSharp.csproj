@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\MyAssets\Scripts\Nemico.cs" />
      <Compile Include="Assets\MyAssets\Scripts\PlayerMovimento.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>D:/Hunted/HuntedPreAlpha/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
